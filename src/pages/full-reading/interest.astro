@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Full Reading Interest | Arcana Calculator';
+const description = 'Thanks for your interest in a deeper Tarot Birth Card reading from Arcana Calculator.';
+const canonical = new URL('/full-reading/interest/', Astro.site).href;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: canonical,
+};
+---
+<BaseLayout title={title} description={description} canonical={canonical} structuredData={structuredData} noindex={true}>
+  <section class="site-shell max-w-3xl py-20 text-center sm:py-28">
+    <p class="eyebrow">Thank you</p>
+    <h1 class="font-display mt-4 text-5xl tracking-tight text-white sm:text-6xl">Thanks for your interest.</h1>
+    <p class="mx-auto mt-6 max-w-xl text-xl leading-8 text-slate-300">Thanks — the full reading is being prepared. You can return to the calculator anytime.</p>
+    <div class="mx-auto mt-10 max-w-lg rounded-2xl border border-gold/20 bg-gold/5 p-6 text-left">
+      <p class="font-display text-2xl text-white">No sign-up required</p>
+      <p class="mt-3 leading-7 text-slate-300">This page does not collect an email address, create an account, process a payment, or store a birth date.</p>
+    </div>
+    <div class="mt-9 flex flex-wrap justify-center gap-4"><a class="rounded-xl bg-gold px-5 py-3 font-semibold text-ink transition hover:bg-amber-300" href="/full-reading/">Back to the Full Reading</a><a class="rounded-xl border border-white/15 px-5 py-3 font-semibold text-white transition hover:border-gold/50 hover:text-gold" href="/">Return to Calculator</a></div>
+  </section>
+</BaseLayout>

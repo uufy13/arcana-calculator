@@ -77,6 +77,12 @@ const structuredData = {
           <p class="mt-2 font-mono text-sm leading-7 text-gold" id="calculation-steps"></p>
         </div>
         <a class="mt-5 inline-flex text-sm font-semibold text-gold hover:text-amber-300" id="result-link" href="/">Read the symbolic meaning →</a>
+        <div class="mt-7 rounded-xl border border-gold/20 bg-gold/5 p-5">
+          <p class="eyebrow">Continue exploring</p>
+          <h3 class="font-display mt-2 text-2xl text-white">Go Deeper Into Your Birth Card</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-300">Explore what a full Birth Card reading could include.</p>
+          <a class="mt-4 inline-flex rounded-lg bg-gold px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-amber-300" id="full-reading-link" href="/full-reading/">Explore the Full Reading</a>
+        </div>
       </div>
     </div>
   </section>
@@ -170,6 +176,7 @@ const structuredData = {
       document.querySelector('#result-intro').textContent = card.description;
       document.querySelector('#calculation-steps').textContent = `${calculation.steps.join('  →  ')}  →  ${calculation.arcanaNumber} · ${card.name}`;
       document.querySelector('#result-link').setAttribute('href', `/arcana/${calculation.cardNumber}`);
+      document.querySelector('#full-reading-link').setAttribute('href', `/full-reading/?arcana=${calculation.arcanaNumber}#sample-reading`);
     } catch (caughtError) {
       if (error) {
         error.textContent = caughtError instanceof Error ? caughtError.message : 'Please enter a valid date.';
