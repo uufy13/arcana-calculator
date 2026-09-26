@@ -4,6 +4,9 @@ import { arcanaCards } from '../data/arcana';
 
 const title = 'Tarot Birth Card Calculator | Arcana Calculator';
 const description = 'Calculate your Tarot Birth Card with a clear Major Arcana method. Explore a symbolic reflection based on your birth date, privately in your browser.';
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear - 1900 + 1 }, (_, index) => currentYear - index);
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -33,8 +36,31 @@ const structuredData = {
         <p class="mt-2 text-sm leading-6 text-slate-400">Enter a date to see the arithmetic step by step.</p>
       </div>
       <form id="arcana-form" novalidate>
-        <label class="block text-sm font-medium text-slate-200" for="birth-date">Date of birth</label>
-        <input class="mt-2 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-date" name="birth-date" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="Date of birth" autocomplete="bday" maxlength="10" required />
+        <fieldset>
+          <legend class="block text-sm font-medium text-slate-200">Date of birth</legend>
+          <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <label class="block text-sm text-slate-300" for="birth-month">
+              <span class="sr-only">Month</span>
+              <select class="mt-1 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-month" name="birth-month" aria-label="Birth month" required>
+                <option value="">Select month</option>
+                {monthNames.map((month, index) => <option value={String(index + 1)}>{month}</option>)}
+              </select>
+            </label>
+            <label class="block text-sm text-slate-300" for="birth-day">
+              <span class="sr-only">Day</span>
+              <select class="mt-1 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-60" id="birth-day" name="birth-day" aria-label="Birth day" disabled required>
+                <option value="">Select day</option>
+              </select>
+            </label>
+            <label class="block text-sm text-slate-300" for="birth-year">
+              <span class="sr-only">Year</span>
+              <select class="mt-1 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-year" name="birth-year" aria-label="Birth year" required>
+                <option value="">Select year</option>
+                {years.map((year) => <option value={String(year)}>{year}</option>)}
+              </select>
+            </label>
+          </div>
+        </fieldset>
         <button class="mt-4 w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink" type="submit">Calculate My Arcana</button>
         <p class="mt-3 text-xs leading-5 text-slate-400">Your date is used only in this browser for the calculation. It is not sent to a server.</p>
         <p class="mt-4 hidden rounded-lg border border-red-300/20 bg-red-400/10 p-3 text-sm text-red-200" id="form-error" role="alert"></p>
@@ -73,74 +99,44 @@ const structuredData = {
 <script>
   import { calculateArcana } from '../lib/calculator';
   import { getArcana } from '../data/arcana';
-  const form = document.querySelector('#arcana-form');
-  const dateInput = document.querySelector<HTMLInputElement>('#birth-date');
+  const form = document.querySelector<HTMLFormElement>('#arcana-form');
+  const monthSelect = document.querySelector<HTMLSelectElement>('#birth-month');
+  const daySelect = document.querySelector<HTMLSelectElement>('#birth-day');
+  const yearSelect = document.querySelector<HTMLSelectElement>('#birth-year');
   const error = document.querySelector('#form-error');
   const result = document.querySelector('#result');
 
-  function formatDateInput(value) {
-    const digits = value.replace(/\D/g, '').slice(0, 8);
-    if (digits.length === 8) {
-      const possibleYear = Number(digits.slice(0, 4));
-      const possibleMonth = Number(digits.slice(4, 6));
-      const possibleDay = Number(digits.slice(6, 8));
-      if (possibleYear >= 1000 && possibleMonth >= 1 && possibleMonth <= 12 && possibleDay >= 1 && possibleDay <= 31) {
-        return `${digits.slice(4, 6)}/${digits.slice(6, 8)}/${digits.slice(0, 4)}`;
-      }
+  function updateDayOptions() {
+    if (!daySelect) return;
+    const month = Number(monthSelect?.value);
+    const year = Number(yearSelect?.value);
+    const selectedDay = daySelect.value;
+    daySelect.innerHTML = '<option value="">Select day</option>';
+    daySelect.disabled = !month || !year;
+    if (!month || !year) return;
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const option = document.createElement('option');
+      option.value = String(day);
+      option.textContent = String(day);
+      daySelect.append(option);
     }
-    if (digits.length >= 4) return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
-    if (digits.length >= 2) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return digits;
+    if (Number(selectedDay) <= daysInMonth) daySelect.value = selectedDay;
   }
 
-  function getDigitCountBefore(value, position) {
-    return (value.slice(0, position).match(/\d/g) ?? []).length;
-  }
-
-  function getCaretForDigitCount(value, digitCount) {
-    if (digitCount === 0) return 0;
-    let seen = 0;
-    for (let index = 0; index < value.length; index += 1) {
-      if (/\d/.test(value[index])) {
-        seen += 1;
-        if (seen === digitCount) return value[index + 1] === '/' ? index + 2 : index + 1;
-      }
-    }
-    return value.length;
-  }
-
-  dateInput?.addEventListener('keydown', (event) => {
-    const start = dateInput.selectionStart ?? 0;
-    const end = dateInput.selectionEnd ?? 0;
-    if (event.key !== 'Backspace' || start !== end || start === 0 || dateInput.value[start - 1] !== '/') return;
-    event.preventDefault();
-    dateInput.value = `${dateInput.value.slice(0, start - 2)}${dateInput.value.slice(start)}`;
-    const formatted = formatDateInput(dateInput.value);
-    dateInput.value = formatted;
-    const caret = Math.max(0, start - 2);
-    dateInput.setSelectionRange(getCaretForDigitCount(formatted, getDigitCountBefore(formatted, caret)), getCaretForDigitCount(formatted, getDigitCountBefore(formatted, caret)));
-  });
-
-  dateInput?.addEventListener('input', () => {
-    const start = dateInput.selectionStart ?? dateInput.value.length;
-    const digitCount = getDigitCountBefore(dateInput.value, start);
-    const formatted = formatDateInput(dateInput.value);
-    dateInput.value = formatted;
-    const caret = getCaretForDigitCount(formatted, Math.min(digitCount, 8));
-    dateInput.setSelectionRange(caret, caret);
-  });
+  monthSelect?.addEventListener('change', updateDayOptions);
+  yearSelect?.addEventListener('change', updateDayOptions);
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
     error?.classList.add('hidden');
-    const enteredDate = dateInput?.value.trim() ?? '';
-    const monthDayYear = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(enteredDate);
-    const yearMonthDay = /^(\d{4})\/(\d{2})\/(\d{2})$/.exec(enteredDate);
-    const dateString = monthDayYear
-      ? `${monthDayYear[3]}-${monthDayYear[1]}-${monthDayYear[2]}`
-      : yearMonthDay
-        ? `${yearMonthDay[1]}-${yearMonthDay[2]}-${yearMonthDay[3]}`
-        : enteredDate;
+    const month = monthSelect?.value ?? '';
+    const day = daySelect?.value ?? '';
+    const year = yearSelect?.value ?? '';
+    const dateString = month && day && year
+      ? `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      : '';
     try {
       const calculation = calculateArcana(dateString);
       const card = getArcana(calculation.cardNumber);
