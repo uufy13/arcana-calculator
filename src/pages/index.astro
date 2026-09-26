@@ -34,7 +34,7 @@ const structuredData = {
       </div>
       <form id="arcana-form" novalidate>
         <label class="block text-sm font-medium text-slate-200" for="birth-date">Date of birth</label>
-        <input class="mt-2 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-date" name="birth-date" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="Date of birth" autocomplete="bday" required />
+        <input class="mt-2 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-date" name="birth-date" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="Date of birth" autocomplete="bday" maxlength="10" required />
         <button class="mt-4 w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink" type="submit">Calculate My Arcana</button>
         <p class="mt-3 text-xs leading-5 text-slate-400">Your date is used only in this browser for the calculation. It is not sent to a server.</p>
         <p class="mt-4 hidden rounded-lg border border-red-300/20 bg-red-400/10 p-3 text-sm text-red-200" id="form-error" role="alert"></p>
@@ -74,9 +74,62 @@ const structuredData = {
   import { calculateArcana } from '../lib/calculator';
   import { getArcana } from '../data/arcana';
   const form = document.querySelector('#arcana-form');
-  const dateInput = document.querySelector('#birth-date');
+  const dateInput = document.querySelector<HTMLInputElement>('#birth-date');
   const error = document.querySelector('#form-error');
   const result = document.querySelector('#result');
+
+  function formatDateInput(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length === 8) {
+      const possibleYear = Number(digits.slice(0, 4));
+      const possibleMonth = Number(digits.slice(4, 6));
+      const possibleDay = Number(digits.slice(6, 8));
+      if (possibleYear >= 1000 && possibleMonth >= 1 && possibleMonth <= 12 && possibleDay >= 1 && possibleDay <= 31) {
+        return `${digits.slice(4, 6)}/${digits.slice(6, 8)}/${digits.slice(0, 4)}`;
+      }
+    }
+    if (digits.length >= 4) return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+    if (digits.length >= 2) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return digits;
+  }
+
+  function getDigitCountBefore(value, position) {
+    return (value.slice(0, position).match(/\d/g) ?? []).length;
+  }
+
+  function getCaretForDigitCount(value, digitCount) {
+    if (digitCount === 0) return 0;
+    let seen = 0;
+    for (let index = 0; index < value.length; index += 1) {
+      if (/\d/.test(value[index])) {
+        seen += 1;
+        if (seen === digitCount) return value[index + 1] === '/' ? index + 2 : index + 1;
+      }
+    }
+    return value.length;
+  }
+
+  dateInput?.addEventListener('keydown', (event) => {
+    const start = dateInput.selectionStart ?? 0;
+    const end = dateInput.selectionEnd ?? 0;
+    if (event.key !== 'Backspace' || start !== end || start === 0 || dateInput.value[start - 1] !== '/') return;
+    event.preventDefault();
+    dateInput.value = `${dateInput.value.slice(0, start - 2)}${dateInput.value.slice(start)}`;
+    const formatted = formatDateInput(dateInput.value);
+    dateInput.value = formatted;
+    const caret = Math.max(0, start - 2);
+    dateInput.setSelectionRange(getCaretForDigitCount(formatted, getDigitCountBefore(formatted, caret)), getCaretForDigitCount(formatted, getDigitCountBefore(formatted, caret)));
+  });
+
+  dateInput?.addEventListener('input', () => {
+    const start = dateInput.selectionStart ?? dateInput.value.length;
+    const digitCount = getDigitCountBefore(dateInput.value, start);
+    const formatted = formatDateInput(dateInput.value);
+    dateInput.value = formatted;
+    const caret = getCaretForDigitCount(formatted, Math.min(digitCount, 8));
+    dateInput.setSelectionRange(caret, caret);
+  });
+
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
     error?.classList.add('hidden');
