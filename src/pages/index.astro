@@ -34,7 +34,7 @@ const structuredData = {
       </div>
       <form id="arcana-form" novalidate>
         <label class="block text-sm font-medium text-slate-200" for="birth-date">Date of birth</label>
-        <input class="mt-2 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-date" name="birth-date" type="date" required />
+        <input class="mt-2 w-full rounded-xl border border-white/15 bg-ink px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-gold focus:ring-2 focus:ring-gold/20" id="birth-date" name="birth-date" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="Date of birth" autocomplete="bday" required />
         <button class="mt-4 w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink" type="submit">Calculate My Arcana</button>
         <p class="mt-3 text-xs leading-5 text-slate-400">Your date is used only in this browser for the calculation. It is not sent to a server.</p>
         <p class="mt-4 hidden rounded-lg border border-red-300/20 bg-red-400/10 p-3 text-sm text-red-200" id="form-error" role="alert"></p>
@@ -80,7 +80,14 @@ const structuredData = {
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
     error?.classList.add('hidden');
-    const dateString = dateInput?.value ?? '';
+    const enteredDate = dateInput?.value.trim() ?? '';
+    const monthDayYear = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(enteredDate);
+    const yearMonthDay = /^(\d{4})\/(\d{2})\/(\d{2})$/.exec(enteredDate);
+    const dateString = monthDayYear
+      ? `${monthDayYear[3]}-${monthDayYear[1]}-${monthDayYear[2]}`
+      : yearMonthDay
+        ? `${yearMonthDay[1]}-${yearMonthDay[2]}-${yearMonthDay[3]}`
+        : enteredDate;
     try {
       const calculation = calculateArcana(dateString);
       const card = getArcana(calculation.cardNumber);
