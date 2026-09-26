@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'How Tarot Birth Cards Work | Arcana Calculator';
+const description = 'Learn how Arcana Calculator turns a birth date into a Major Arcana number, why Tarot systems differ, and how to use the result as symbolic reflection.';
+const structuredData = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description, url: Astro.url.href, author: { '@type': 'Organization', name: 'Arcana Calculator' } };
+---
+<BaseLayout title={title} description={description} structuredData={structuredData}>
+  <article class="site-shell max-w-4xl py-14 sm:py-20">
+    <p class="eyebrow">A clear, modest method</p>
+    <h1 class="font-display mt-4 text-5xl tracking-tight text-white sm:text-6xl">How Tarot Birth Cards work</h1>
+    <p class="mt-6 max-w-2xl text-xl leading-8 text-slate-300">This calculator connects a birth date to a Major Arcana number through simple digit reduction. The arithmetic is intentionally visible, so you can follow every step.</p>
+    <div class="mt-12 grid gap-8 sm:grid-cols-2">
+      <section class="card-surface p-6"><p class="eyebrow">01</p><h2 class="font-display mt-3 text-2xl text-white">What is a Tarot Birth Card?</h2><p class="mt-3 leading-7 text-slate-300">A Tarot Birth Card is a symbolic card association derived from a person’s birth date. Readers use it as a lens for reflection, storytelling, or journaling—not as a fixed definition of a person.</p></section>
+      <section class="card-surface p-6"><p class="eyebrow">02</p><h2 class="font-display mt-3 text-2xl text-white">What is the Major Arcana?</h2><p class="mt-3 leading-7 text-slate-300">The Major Arcana is the 22-card part of a Tarot deck numbered from 0 to 21. Its cards are commonly read as broad themes, archetypal images, and stages of experience.</p></section>
+    </div>
+    <section class="mt-12 border-t border-white/10 pt-10"><h2 class="font-display text-3xl text-white">Our calculation method</h2><ol class="mt-6 space-y-5 text-slate-300"><li class="flex gap-4"><span class="font-display text-2xl text-gold">1</span><span>Use the numeric month, day, and full four-digit year. For March 21, 1985, the starting calculation is <code class="rounded bg-ink-soft px-2 py-1 text-sm text-gold">3 + 21 + 1985 = 2009</code>.</span></li><li class="flex gap-4"><span class="font-display text-2xl text-gold">2</span><span>If the total is greater than 22, add its digits once: <code class="rounded bg-ink-soft px-2 py-1 text-sm text-gold">2 + 0 + 0 + 9 = 11</code>.</span></li><li class="flex gap-4"><span class="font-display text-2xl text-gold">3</span><span>If necessary, continue reducing the digits until the result is between 1 and 22. A result of 22 is treated as The Fool, whose RWS page number is 0.</span></li><li class="flex gap-4"><span class="font-display text-2xl text-gold">4</span><span>Match the final number to the Rider-Waite-Smith style Major Arcana numbering used here: 8 is Strength, 11 is Justice, and 22 is the special Fool alias.</span></li></ol></section>
+    <section class="mt-12 rounded-2xl border border-gold/20 bg-gold/5 p-6"><h2 class="font-display text-3xl text-white">Numbering traditions differ</h2><p class="mt-3 leading-7 text-slate-300">This site uses Rider-Waite-Smith style numbering, where Strength is VIII (8) and Justice is XI (11). Different Tarot traditions may use different numbering conventions and calculation methods, so another system may produce a different result.</p></section>
+    <section class="mt-12 rounded-2xl border border-gold/20 bg-gold/5 p-6"><h2 class="font-display text-3xl text-white">A note about Tarot traditions</h2><p class="mt-3 leading-7 text-slate-300">There is no single universal Tarot Birth Card calculation. Some systems use a different order of operations, preserve compound numbers, or interpret two related cards together. We use the method above because it is easy to explain and reproduce. Different results do not mean one tradition is “wrong”; they reflect different symbolic frameworks.</p></section>
+    <section class="mt-12 border-t border-white/10 pt-10"><h2 class="font-display text-3xl text-white">Privacy and perspective</h2><p class="mt-3 leading-7 text-slate-300">The date you enter is processed locally in your browser. Arcana Calculator does not create accounts, request an email address, or send your birth date to a server. Tarot is a reflective and creative practice; this site does not claim that Tarot can scientifically predict the future.</p></section>
+  </article>
+</BaseLayout>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Arcana Calculator</title>
+  <desc id="desc">Tarot Birth Card Calculator</desc>
+  <rect width="1200" height="630" fill="#101827"/>
+  <circle cx="980" cy="100" r="250" fill="#172235"/>
+  <circle cx="180" cy="590" r="300" fill="#172235"/>
+  <path d="M600 100l30 100 100 30-100 30-30 100-30-100-100-30 100-30z" fill="#f5c76b"/>
+  <text x="100" y="315" fill="#f5c76b" font-family="Georgia, serif" font-size="32" letter-spacing="6">ARCANA CALCULATOR</text>
+  <text x="100" y="400" fill="#fff" font-family="Georgia, serif" font-size="72">Tarot Birth Card</text>
+  <text x="100" y="475" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="30">A private, transparent Major Arcana reflection</text>
+</svg>

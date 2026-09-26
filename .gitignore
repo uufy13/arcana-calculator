@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.pnpm-store/
+.volta-home/
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
+
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*

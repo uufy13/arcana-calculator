@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { arcanaCards, getArcana } from '../../data/arcana';
+
+export function getStaticPaths() {
+  return arcanaCards.map((card) => ({ params: { id: String(card.number) }, props: { card } }));
+}
+
+const { card } = Astro.props;
+const title = `${card.name} (${card.number}) Meaning | Arcana Calculator`;
+const description = `${card.name}, Major Arcana ${card.number}: ${card.meaning} Explore this Tarot Birth Card symbolism on Arcana Calculator.`;
+const structuredData = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description, url: Astro.url.href, about: { '@type': 'Thing', name: card.name } };
+const previous = getArcana(card.number === 0 ? 21 : card.number - 1);
+const next = getArcana(card.number === 21 ? 0 : card.number + 1);
+---
+<BaseLayout title={title} description={description} structuredData={structuredData}>
+  <article class="site-shell max-w-4xl py-14 sm:py-20">
+    <a class="text-sm text-slate-400 hover:text-gold" href="/#arcana-library">← Back to the Arcana library</a>
+    <div class="mt-10 grid gap-10 md:grid-cols-[12rem_1fr] md:items-start md:gap-14">
+      <div class="flex h-44 w-44 items-center justify-center rounded-full border border-gold/30 bg-gold/5 md:h-48 md:w-48"><span class="font-display text-8xl text-gold">{card.number}</span></div>
+      <div><p class="eyebrow">Major Arcana · {card.number}</p><h1 class="font-display mt-3 text-5xl tracking-tight text-white sm:text-6xl">{card.name}</h1><p class="mt-6 text-xl leading-8 text-slate-300">{card.description}</p></div>
+    </div>
+    <section class="mt-14 border-t border-white/10 pt-10"><p class="eyebrow">Symbolic meaning</p><h2 class="font-display mt-3 text-3xl text-white">A prompt for reflection</h2><p class="mt-4 max-w-2xl text-lg leading-8 text-slate-300">{card.meaning}</p><p class="mt-5 max-w-2xl leading-7 text-slate-400">This card is offered as an evocative symbol rather than a prediction or fixed personality label. Consider what its themes bring to mind in your own life, relationships, and current season.</p></section>
+    <nav class="mt-14 grid gap-3 border-t border-white/10 pt-8 sm:grid-cols-2" aria-label="Arcana navigation"><a class="rounded-xl border border-white/10 p-4 hover:border-gold/50" href={`/arcana/${previous.number}`}><span class="block text-xs uppercase tracking-widest text-slate-500">Previous</span><span class="mt-1 block text-white">{previous.number} · {previous.name}</span></a><a class="rounded-xl border border-white/10 p-4 text-left hover:border-gold/50 sm:text-right" href={`/arcana/${next.number}`}><span class="block text-xs uppercase tracking-widest text-slate-500">Next</span><span class="mt-1 block text-white">{next.number} · {next.name}</span></a></nav>
+  </article>
+</BaseLayout>

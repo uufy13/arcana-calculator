@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+
+const { title, description, canonical = Astro.url.href, structuredData } = Astro.props;
+const siteName = 'Arcana Calculator';
+const image = new URL('/og-image.svg', Astro.site).href;
+const defaultStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteName,
+  url: Astro.site?.href,
+  description,
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111827'/%3E%3Cpath d='M32 12l5.4 13.6L51 31l-13.6 5.4L32 50l-5.4-13.6L13 31l13.6-5.4L32 12z' fill='%23f5c76b'/%3E%3C/svg%3E" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData ?? defaultStructuredData)}></script>
+  </head>
+  <body class="min-h-screen bg-ink text-slate-100 antialiased">
+    <header class="border-b border-white/10">
+      <nav class="site-shell flex items-center justify-between py-5" aria-label="Main navigation">
+        <a class="font-display text-lg font-semibold tracking-tight text-white" href="/">Arcana <span class="text-gold">Calculator</span></a>
+        <div class="flex gap-4 text-sm text-slate-300 sm:gap-6">
+          <a class="nav-link" href="/how-it-works">How it works</a>
+          <a class="nav-link" href="/#arcana-library">Arcana library</a>
+        </div>
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer class="border-t border-white/10 py-10">
+      <div class="site-shell flex flex-col gap-3 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <p>Arcana Calculator is for symbolic reflection and entertainment.</p>
+        <div class="flex gap-5"><a class="nav-link" href="/how-it-works">Learn about the method →</a><a class="nav-link" href="/privacy">Privacy</a></div>
+      </div>
+    </footer>
+  </body>
+</html>
