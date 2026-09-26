@@ -61,7 +61,7 @@ const structuredData = {
             </label>
           </div>
         </fieldset>
-        <button class="mt-4 w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink" type="submit">Calculate My Arcana</button>
+        <button class="mt-4 w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gold" id="calculate-button" type="submit" disabled>Calculate My Arcana</button>
         <p class="mt-3 text-xs leading-5 text-slate-400">Your date is used only in this browser for the calculation. It is not sent to a server.</p>
         <p class="mt-4 hidden rounded-lg border border-red-300/20 bg-red-400/10 p-3 text-sm text-red-200" id="form-error" role="alert"></p>
       </form>
@@ -103,30 +103,46 @@ const structuredData = {
   const monthSelect = document.querySelector<HTMLSelectElement>('#birth-month');
   const daySelect = document.querySelector<HTMLSelectElement>('#birth-day');
   const yearSelect = document.querySelector<HTMLSelectElement>('#birth-year');
+  const calculateButton = document.querySelector<HTMLButtonElement>('#calculate-button');
   const error = document.querySelector('#form-error');
   const result = document.querySelector('#result');
+
+  function getDaysInMonth(month, year) {
+    if (month === 2 && !year) return 28;
+    return new Date(year || 2000, month, 0).getDate();
+  }
 
   function updateDayOptions() {
     if (!daySelect) return;
     const month = Number(monthSelect?.value);
-    const year = Number(yearSelect?.value);
+    const year = yearSelect?.value ? Number(yearSelect.value) : undefined;
     const selectedDay = daySelect.value;
     daySelect.innerHTML = '<option value="">Select day</option>';
-    daySelect.disabled = !month || !year;
-    if (!month || !year) return;
+    daySelect.disabled = !month;
+    if (!month) return;
 
-    const daysInMonth = new Date(year, month, 0).getDate();
-    for (let day = 1; day <= daysInMonth; day += 1) {
+    const maximumDay = getDaysInMonth(month, year);
+    for (let day = 1; day <= maximumDay; day += 1) {
       const option = document.createElement('option');
       option.value = String(day);
       option.textContent = String(day);
       daySelect.append(option);
     }
-    if (Number(selectedDay) <= daysInMonth) daySelect.value = selectedDay;
+    if (selectedDay && Number(selectedDay) <= maximumDay) daySelect.value = selectedDay;
+  }
+
+  function updateSubmitState() {
+    if (!calculateButton) return;
+    calculateButton.disabled = !monthSelect?.value || !daySelect?.value || !yearSelect?.value;
   }
 
   monthSelect?.addEventListener('change', updateDayOptions);
-  yearSelect?.addEventListener('change', updateDayOptions);
+  monthSelect?.addEventListener('change', updateSubmitState);
+  daySelect?.addEventListener('change', updateSubmitState);
+  yearSelect?.addEventListener('change', () => {
+    if (Number(monthSelect?.value) === 2) updateDayOptions();
+    updateSubmitState();
+  });
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -134,6 +150,15 @@ const structuredData = {
     const month = monthSelect?.value ?? '';
     const day = daySelect?.value ?? '';
     const year = yearSelect?.value ?? '';
+    if (!month || !day || !year) {
+      if (error) {
+        error.textContent = 'Please select your month, day, and year.';
+        error.classList.remove('hidden');
+      }
+      result?.classList.add('hidden');
+      updateSubmitState();
+      return;
+    }
     const dateString = month && day && year
       ? `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
       : '';
